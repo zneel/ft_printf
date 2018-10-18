@@ -5,21 +5,14 @@
 # include <stdarg.h>
 # include <stdint.h>
 
-#define HASH		'#'
-#define ZERO		'0'
-#define MINUS		'-'
-#define PLUS		'+'
-#define SPACE		' '
-#define SPECIFIER	'%'
-#define ASTERISK	'*'
-
 typedef struct	s_flags 
 {
-	uint_fast8_t hash;
-	uint_fast8_t zero;
-	uint_fast8_t minus;
-	uint_fast8_t plus;
-	uint_fast8_t space;
+	uint64_t hash;
+	uint64_t zero;
+	uint64_t minus;
+	uint64_t plus;
+	uint64_t space;
+	uint64_t width;
 }				t_flags;
 
 int				ft_printf(const char *format, ...);
