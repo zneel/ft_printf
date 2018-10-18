@@ -6,7 +6,7 @@
 /*   By: ebouvier <ebouvier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/17 17:43:13 by ebouvier          #+#    #+#             */
-/*   Updated: 2018/10/19 00:27:14 by ebouvier         ###   ########.fr       */
+/*   Updated: 2018/10/19 00:38:29 by ebouvier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,15 @@ static inline void	parse_flags(const char *fmt, t_flags *flags, va_list ap)
 	parse_width(fmt, flags, ap);
 }
 
-static inline void	parse_specifier(const char *fmt, t_flags *flags, va_list ap)
+static inline void	parse_specifier(const char *fmt, t_flags *flags, va_list ap, int *ret)
 {
 	while(*fmt)
 	{
 		if (*fmt != '%')
+		{
 			ft_putchar(*fmt);
+			(*ret)++;
+		}
 		else
 		{
 			fmt++;
@@ -76,8 +79,8 @@ int					ft_printf(const char *fmt, ...)
 	ret = 0;
 	va_start(ap, fmt);
 	init_flags(&flags);
-	parse_specifier(fmt, &flags, ap);
-	print_flags(&flags);
+	parse_specifier(fmt, &flags, ap, &ret);
+	// print_flags(&flags);
 	va_end(ap);
 	return (ret);
 }
