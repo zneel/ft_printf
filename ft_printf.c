@@ -6,7 +6,7 @@
 /*   By: ebouvier <ebouvier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/17 17:43:13 by ebouvier          #+#    #+#             */
-/*   Updated: 2018/10/18 23:16:15 by ebouvier         ###   ########.fr       */
+/*   Updated: 2018/10/18 23:31:26 by ebouvier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ static inline void			parse_specifier(const char **fmt, t_flags *flags, va_list a
 		{
 			ft_putchar(**fmt);
 			(*fmt)++;
-			continue;
 		}
 		else
 		{
