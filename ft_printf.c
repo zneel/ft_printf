@@ -6,43 +6,81 @@
 /*   By: ebouvier <ebouvier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/17 17:43:13 by ebouvier          #+#    #+#             */
-/*   Updated: 2018/10/19 00:38:29 by ebouvier         ###   ########.fr       */
+/*   Updated: 2018/10/20 18:39:50 by ebouvier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static inline void	parse_width(const char *fmt, t_flags *flags, va_list ap)
+unsigned int g_width		= 0x0U;
+unsigned int g_precision	= 0x0U;
+
+static inline void	parse_precision(const char *fmt, va_list ap, int *flags)
 {
+	int p;
+
+	p = 0x0U;
+	if (*fmt == '.')
+	{
+      *flags |= FLAGS_PRECISION;
+	  fmt++;
+	  if (ft_isdigit(*fmt))
+	  {
+		  g_precision = (unsigned int) ft_atoi(fmt);
+	  }
+	  else if (*fmt == '*')
+	  {
+		  p = va_arg(ap, int);
+		  g_precision = p > 0 ? (unsigned int) p : 0x0U;
+		  fmt++;
+	  }
+	}
+}
+
+static inline void	parse_width(const char *fmt, va_list ap, int *flags)
+{
+	int w;
+
+	w = 0x0U;
 	if (ft_isdigit(*fmt))
-		flags->width = ft_atoi(fmt);
+		g_width = (unsigned int) ft_atoi(fmt);
 	else if (*fmt == '*')
-		flags->width = va_arg(ap, int);
+	{
+		w = va_arg(ap, int);
+		if (w < 0)
+		{
+			*flags |= LEFT;
+			g_width = (unsigned int)-w; 
+		}
+		else
+			g_width = (unsigned int)w; 
+	}
 	fmt++;
 }
 
-static inline void	parse_flags(const char *fmt, t_flags *flags, va_list ap)
+static inline void	parse_flags(const char *fmt, int *flags, va_list ap)
 {
 	while(*fmt)
 	{
 		if (*fmt == '#')
-			flags->hash = 1U;
+			*flags |= HASH;
 		else if (*fmt == '0')
-			flags->zero = 1U;
+			*flags |= ZERO;
 		else if (*fmt == '-')
-			flags->minus = 1U;
+			*flags |= LEFT;
 		else if (*fmt == '+')
-			flags->plus = 1U;
+			*flags |= PLUS;
 		else if (*fmt == ' ')
-			flags->space = 1U;
+			*flags |= SPACE;
 		else
 			break;
 		fmt++;
 	}
-	parse_width(fmt, flags, ap);
+	parse_width(fmt, ap, flags);
+	parse_precision(fmt, ap, flags);
 }
 
-static inline void	parse_specifier(const char *fmt, t_flags *flags, va_list ap, int *ret)
+static inline void	parse_specifier(const char *fmt, int *flags, va_list ap, int *ret)
 {
 	while(*fmt)
 	{
@@ -60,27 +98,17 @@ static inline void	parse_specifier(const char *fmt, t_flags *flags, va_list ap, 
 	}
 }
 
-static inline void	init_flags(t_flags *flags)
-{
-	flags->hash		= 0U;
-	flags->zero		= 0U;
-	flags->minus	= 0U;
-	flags->plus		= 0U;
-	flags->space	= 0U;
-	flags->width	= 0U;
-}
-
 int					ft_printf(const char *fmt, ...)
 {
 	va_list ap;
 	int     ret;
-	t_flags flags;
+	int		flags;
 	
 	ret = 0;
+	flags = 0x0U;
 	va_start(ap, fmt);
-	init_flags(&flags);
 	parse_specifier(fmt, &flags, ap, &ret);
-	// print_flags(&flags);
+	print_flags(&flags);
 	va_end(ap);
 	return (ret);
 }
