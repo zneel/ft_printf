@@ -6,7 +6,7 @@
 #    By: ebouvier <ebouvier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/03/23 18:49:32 by ebouvier          #+#    #+#              #
-#    Updated: 2018/10/19 00:26:59 by ebouvier         ###   ########.fr        #
+#    Updated: 2018/10/21 21:26:45 by ebouvier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,6 +35,6 @@ fclean: clean
 re: fclean all
 
 dev: all
-	@$(CC) $(CFLAGS) main.c helpers.c libftprintf.a
+	@$(CC) $(CFLAGS) main.c libftprintf.a
 
 .PHONY: all clean fclean re

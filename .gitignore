@@ -56,3 +56,6 @@ main.c
 
 # Vscode
 .vscode
+
+#cmake
+cmake-build-debug
