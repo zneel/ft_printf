@@ -6,7 +6,7 @@
 /*   By: ebouvier <ebouvier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/17 17:43:13 by ebouvier          #+#    #+#             */
-/*   Updated: 2018/11/01 14:09:04 by ebouvier         ###   ########.fr       */
+/*   Updated: 2018/11/01 16:09:28 by ebouvier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,22 +21,41 @@ static inline void	output_char(char c, int *ret)
 	++*ret;
 }
 
-static inline void	convert_c(int *flags, va_list ap, int *ret)
+
+
+static inline void	convert_s(int *flags, va_list ap, int *ret)
 {
+	char *p_str;
 	unsigned int len;
 
-	len = 1U;
+	p_str = va_arg(ap, char*);
+	if (p_str == NULL)
+		p_str = "(null)";
+	len = ft_strlen(p_str);	
+	if (*flags & F_P)
+		len = (len < g_precision ? len : g_precision);
 	if (!(*flags & LEFT))
-	{
 		while (len++ < g_width)
 			output_char(' ', ret);
-	}
+	while (*p_str && (!(*flags & F_P) || g_precision--))
+		output_char(*(p_str++), ret);
+	if (*flags & LEFT)
+		while (len++ < g_width)
+			output_char(' ', ret);
+}
+
+static inline void	convert_c(int *flags, va_list ap, int *ret)
+{
+	unsigned int l;
+
+	l = 1U;
+	if (!(*flags & LEFT))
+		while (l++ < g_width)
+			output_char(' ', ret);
 	output_char((char)va_arg(ap, int), ret);
 	if (*flags & LEFT)
-	{
-		while (len++ < g_width)
+		while (l++ < g_width)
 			output_char(' ', ret);
-	}
 }
 
 static inline void	convert_percent(const char **fmt, int *flags, va_list ap, int *ret)
@@ -57,7 +76,12 @@ static inline void	convert_default(const char **fmt, int *flags, va_list ap, int
 
 static inline void	parse_convert(const char **fmt, int *flags, va_list ap, int *ret)
 {
-	if (**fmt == 'c')
+	if (**fmt == 's')
+	{
+		convert_s(flags, ap, ret);
+		++*fmt;
+	}
+	else if (**fmt == 'c')
 	{
 		convert_c(flags, ap, ret);
 		++*fmt;
