@@ -6,7 +6,7 @@
 #    By: ebouvier <ebouvier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/03/23 18:49:32 by ebouvier          #+#    #+#              #
-#    Updated: 2018/11/01 13:28:57 by ebouvier         ###   ########.fr        #
+#    Updated: 2018/11/01 13:51:24 by ebouvier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,6 +37,6 @@ fclean: clean
 re: fclean all
 
 dev: all
-	$(CC) $(CFLAGS) main.c $(OBJS)
+	$(CC) $(CFLAGS) main.c $(NAME)
 
 .PHONY: all clean fclean re dev

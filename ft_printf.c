@@ -6,7 +6,7 @@
 /*   By: ebouvier <ebouvier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/17 17:43:13 by ebouvier          #+#    #+#             */
-/*   Updated: 2018/11/01 12:52:46 by ebouvier         ###   ########.fr       */
+/*   Updated: 2018/11/01 14:08:17 by ebouvier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static inline void	output_char(char c, int *ret)
 	++*ret;
 }
 
-static inline void	convert_c(const char **fmt, int *flags, va_list ap, int *ret)
+static inline void	convert_c(int *flags, va_list ap, int *ret)
 {
 	unsigned int len;
 
@@ -37,7 +37,6 @@ static inline void	convert_c(const char **fmt, int *flags, va_list ap, int *ret)
 		while (len++ < g_width)
 			output_char(' ', ret);
 	}
-	++*fmt;
 }
 
 static inline void	convert_percent(const char **fmt, int *flags, va_list ap, int *ret)
@@ -60,7 +59,7 @@ static inline void	parse_convert(const char **fmt, int *flags, va_list ap, int *
 {
 	if (**fmt == 'c')
 	{
-		convert_c(fmt, flags, ap, ret);
+		convert_c(flags, ap, ret);
 		++*fmt;
 	}
 	else if (**fmt == '%')
@@ -177,5 +176,6 @@ int					ft_printf(const char *fmt, ...)
 	parse_specifier(&fmt, &flags, ap, &ret);
 	ft_putchar(0);
 	va_end(ap);
+	ft_putnbr(ret);
 	return (ret);
 }
