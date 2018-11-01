@@ -6,7 +6,7 @@
 /*   By: ebouvier <ebouvier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/17 17:43:13 by ebouvier          #+#    #+#             */
-/*   Updated: 2018/11/01 14:08:17 by ebouvier         ###   ########.fr       */
+/*   Updated: 2018/11/01 14:09:04 by ebouvier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,6 +176,5 @@ int					ft_printf(const char *fmt, ...)
 	parse_specifier(&fmt, &flags, ap, &ret);
 	ft_putchar(0);
 	va_end(ap);
-	ft_putnbr(ret);
 	return (ret);
 }
