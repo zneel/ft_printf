@@ -6,38 +6,53 @@
 /*   By: ebouvier <ebouvier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/17 17:43:13 by ebouvier          #+#    #+#             */
-/*   Updated: 2018/10/21 23:44:26 by ebouvier         ###   ########.fr       */
+/*   Updated: 2018/11/01 12:52:46 by ebouvier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-unsigned int g_width		= 0x0U;
-unsigned int g_precision	= 0x0U;
+unsigned int g_width		= 0U;
+unsigned int g_precision	= 0U;
+
+static inline void	output_char(char c, int *ret)
+{
+	write(1, &c, 1);
+	++*ret;
+}
 
 static inline void	convert_c(const char **fmt, int *flags, va_list ap, int *ret)
 {
 	unsigned int len;
-	len = 0x1U;
 
+	len = 1U;
 	if (!(*flags & LEFT))
 	{
 		while (len++ < g_width)
-		{
-			ft_putchar(' ');
-			(*ret)++;
-		}
+			output_char(' ', ret);
 	}
-	ft_putchar((char)va_arg(ap, int));
-	(*ret)++;
+	output_char((char)va_arg(ap, int), ret);
 	if (*flags & LEFT)
 	{
 		while (len++ < g_width)
-		{
-			ft_putchar(' ');
-			(*ret)++;
-		}
+			output_char(' ', ret);
 	}
+	++*fmt;
+}
+
+static inline void	convert_percent(const char **fmt, int *flags, va_list ap, int *ret)
+{
+	(void)flags;
+	(void)ap;
+	output_char('%', ret);
+	++*fmt;
+}
+
+static inline void	convert_default(const char **fmt, int *flags, va_list ap, int *ret)
+{
+	(void)flags;
+	(void)ap;
+	output_char(**fmt, ret);
 	++*fmt;
 }
 
@@ -48,13 +63,23 @@ static inline void	parse_convert(const char **fmt, int *flags, va_list ap, int *
 		convert_c(fmt, flags, ap, ret);
 		++*fmt;
 	}
+	else if (**fmt == '%')
+	{
+		convert_percent(fmt, flags, ap, ret);
+		++*fmt;
+	}
+	else 
+	{
+		convert_default(fmt, flags, ap, ret);
+		++*fmt;
+	}
 }
 
 static inline void	parse_precision(const char **fmt, int *flags, va_list ap)
 {
 	int p;
 
-	p = 0x0U;
+	p = 0U;
 	if (**fmt == '.')
 	{
 		*flags |= F_P;
@@ -68,7 +93,7 @@ static inline void	parse_precision(const char **fmt, int *flags, va_list ap)
 		else if (**fmt == '*')
 		{
 			p = va_arg(ap, int);
-			g_precision = p > 0 ? (unsigned int) p : 0x0U;
+			g_precision = p > 0 ? (unsigned int) p : 0U;
 			++*fmt;
 		}
 	}
@@ -78,7 +103,7 @@ static inline void	parse_width(const char **fmt, int *flags, va_list ap)
 {
 	int w;
 
-	w = 0x0U;
+	w = 0U;
 	if (ft_isdigit(**fmt))
 	{
 		g_width = (unsigned int) ft_atoi(*fmt);
@@ -128,9 +153,8 @@ static inline void	parse_specifier(const char **fmt, int *flags, va_list ap, int
 	{
 		if (**fmt != '%')
 		{
-			ft_putchar(**fmt);
+			output_char(**fmt, ret);
 			++*fmt;
-			(*ret)++;
 			continue;
 		}
 		else
@@ -148,9 +172,10 @@ int					ft_printf(const char *fmt, ...)
 	int		flags;
 	
 	ret = 0;
-	flags = 0x0U;
+	flags = 0U;
 	va_start(ap, fmt);
 	parse_specifier(&fmt, &flags, ap, &ret);
+	ft_putchar(0);
 	va_end(ap);
 	return (ret);
 }

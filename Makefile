@@ -6,35 +6,37 @@
 #    By: ebouvier <ebouvier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/03/23 18:49:32 by ebouvier          #+#    #+#              #
-#    Updated: 2018/10/21 21:26:45 by ebouvier         ###   ########.fr        #
+#    Updated: 2018/11/01 13:28:57 by ebouvier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= libftprintf.a
-CC			= gcc
+CC			= cc
 CFLAGS		= -Wall -Wextra -Werror
-SRCS		= ft_printf.c
+SRCS		= ft_printf.c \
+				ft_atoi.c \
+				ft_isdigit.c \
+				ft_putchar.c \
+				ft_putnbr.c \
+				ft_putstr.c \
+				ft_strlen.c
+
 OBJS		= $(SRCS:.c=.o)
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	make -C libft
-	ar rcs tmplibftprintf.a $(OBJS)
-	libtool -static -o $(NAME) tmplibftprintf.a libft/libft.a
-	rm -rf tmplibftprintf.a
+	ar rcs libftprintf.a $(OBJS)
 
 clean:
-	make -C libft clean
 	rm -f $(OBJS)
 
 fclean: clean
-	make -C libft fclean
 	rm -f $(NAME)
 
 re: fclean all
 
 dev: all
-	@$(CC) $(CFLAGS) main.c libftprintf.a
+	$(CC) $(CFLAGS) main.c $(OBJS)
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re dev
