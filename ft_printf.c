@@ -6,7 +6,7 @@
 /*   By: ebouvier <ebouvier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/17 17:43:13 by ebouvier          #+#    #+#             */
-/*   Updated: 2018/11/01 16:09:28 by ebouvier         ###   ########.fr       */
+/*   Updated: 2018/11/02 12:06:04 by ebouvier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,24 @@
 unsigned int g_width		= 0U;
 unsigned int g_precision	= 0U;
 
+
+/*
+** output_char
+** output a char and increment return value
+*/
+
 static inline void	output_char(char c, int *ret)
 {
 	write(1, &c, 1);
 	++*ret;
 }
 
+/*
+** convert_string
+** handle the string output
+*/
 
-
-static inline void	convert_s(int *flags, va_list ap, int *ret)
+static inline void	convert_s(const char **fmt, int *flags, va_list ap, int *ret)
 {
 	char *p_str;
 	unsigned int len;
@@ -42,9 +51,20 @@ static inline void	convert_s(int *flags, va_list ap, int *ret)
 	if (*flags & LEFT)
 		while (len++ < g_width)
 			output_char(' ', ret);
+	++*fmt;
 }
 
-static inline void	convert_c(int *flags, va_list ap, int *ret)
+/*
+**	convert_char
+**	We're always starting at 1 because we're printing a char...
+**	First we check the LEFT padding flag for pre-padding
+**	(!(*flags & LEFT)) means that we're checking if the bitmask isn't set in flags
+**	.... priting the char ....
+**	Then we check the LEFT padding flag to print post-padding
+**	(*flags & LEFT) means that we're checking if the bitmask is set in flags
+*/
+
+static inline void	convert_c(const char **fmt, int *flags, va_list ap, int *ret)
 {
 	unsigned int l;
 
@@ -56,7 +76,18 @@ static inline void	convert_c(int *flags, va_list ap, int *ret)
 	if (*flags & LEFT)
 		while (l++ < g_width)
 			output_char(' ', ret);
+	++*fmt;	
 }
+
+static inline void convert_d(const char **fmt, int *flags, va_list ap, int *ret)
+{
+
+}
+
+/*
+**	convert_percent
+**	We're just printing a %
+*/
 
 static inline void	convert_percent(const char **fmt, int *flags, va_list ap, int *ret)
 {
@@ -66,6 +97,11 @@ static inline void	convert_percent(const char **fmt, int *flags, va_list ap, int
 	++*fmt;
 }
 
+/*
+**	convert_default
+**	Printing dereferenced fmt
+*/
+
 static inline void	convert_default(const char **fmt, int *flags, va_list ap, int *ret)
 {
 	(void)flags;
@@ -74,29 +110,31 @@ static inline void	convert_default(const char **fmt, int *flags, va_list ap, int
 	++*fmt;
 }
 
+/*
+**	parse_convert
+**	Checking wich function we need to call for the current **fmt
+*/
+
 static inline void	parse_convert(const char **fmt, int *flags, va_list ap, int *ret)
 {
 	if (**fmt == 's')
-	{
-		convert_s(flags, ap, ret);
-		++*fmt;
-	}
+		convert_s(fmt, flags, ap, ret);
 	else if (**fmt == 'c')
-	{
-		convert_c(flags, ap, ret);
-		++*fmt;
-	}
+		convert_c(fmt, flags, ap, ret);
 	else if (**fmt == '%')
-	{
 		convert_percent(fmt, flags, ap, ret);
-		++*fmt;
-	}
 	else 
-	{
 		convert_default(fmt, flags, ap, ret);
-		++*fmt;
-	}
 }
+
+/*
+**	parse_precision
+**	Checking the precision
+**	If we encounter a '.' in **fmt we're turning on the flag.
+**	|= is setting the bitmask
+**  the flag for precision is 1024U
+**	*flags == 0100 0000 0000
+*/
 
 static inline void	parse_precision(const char **fmt, int *flags, va_list ap)
 {
@@ -121,6 +159,11 @@ static inline void	parse_precision(const char **fmt, int *flags, va_list ap)
 		}
 	}
 }
+
+/*
+**	parse_width
+**	Parsing the width
+*/
 
 static inline void	parse_width(const char **fmt, int *flags, va_list ap)
 {
@@ -147,6 +190,17 @@ static inline void	parse_width(const char **fmt, int *flags, va_list ap)
 	}
 }
 
+/*
+**	parse_flags
+**	Parsing the flags and activating some bit masks
+**	|= is setting the bitmask
+**	eg:
+**		- we're activating the # flag (1U)
+**			- *flags == 0000 0000 0001 // 1
+**		- then we're activating the - flag (4U)
+**			- *flags == 0000 0000 0101 // 5
+*/
+
 static inline void	parse_flags(const char **fmt, int *flags, va_list ap, int *ret)
 {
 	while(**fmt)
@@ -169,6 +223,11 @@ static inline void	parse_flags(const char **fmt, int *flags, va_list ap, int *re
 	parse_precision(fmt, flags, ap);
 	parse_convert(fmt, flags, ap, ret);
 }
+
+/*
+**	parse_specifier
+**	Checking the specifier
+*/
 
 static inline void	parse_specifier(const char **fmt, int *flags, va_list ap, int *ret)
 {

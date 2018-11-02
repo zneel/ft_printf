@@ -6,12 +6,12 @@
 #    By: ebouvier <ebouvier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/03/23 18:49:32 by ebouvier          #+#    #+#              #
-#    Updated: 2018/11/01 13:51:24 by ebouvier         ###   ########.fr        #
+#    Updated: 2018/11/02 11:19:17 by ebouvier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= libftprintf.a
-CC			= cc
+CC			= gcc
 CFLAGS		= -Wall -Wextra -Werror
 SRCS		= ft_printf.c \
 				ft_atoi.c \
@@ -37,6 +37,11 @@ fclean: clean
 re: fclean all
 
 dev: all
-	$(CC) $(CFLAGS) main.c $(NAME)
+	$(CC) $(CFLAGS) main.c $(NAME) -o ft_printf
+
+test: dev
+	cp $(NAME) curqui_test
+	make -C curqui_test
+	./curqui_test/ft_printf_tests
 
 .PHONY: all clean fclean re dev

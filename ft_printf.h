@@ -20,8 +20,7 @@
 #define F_LL            (1U << 9U)
 #define F_P             (1U << 10U)
 
-int				ft_printf(const char *format, ...);
-
+int				    ft_printf(const char *format, ...);
 int					ft_atoi(const char *s);
 int					ft_isdigit(int c);
 void				ft_putstr(char const *s);
