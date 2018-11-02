@@ -59,3 +59,5 @@ main.c
 
 #cmake
 cmake-build-debug
+curqui_test
+rslt_trace.txt
